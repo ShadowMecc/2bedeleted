@@ -20,7 +20,8 @@ public class RunMed {
      *****************************************************/
     public RunMed() 
     { 
-
+	leftHeap = new ALMaxHeap();
+	rightHeap = new ALMinHeap();
     }//O(1)
 
 
@@ -30,7 +31,15 @@ public class RunMed {
      *****************************************************/
     public double getMedian() 
     {
-
+	if (isEmpty())
+	    return -1;
+	else if (leftHeap.size() == rightHeap.size()){
+	    return (leftHeap.peekMax() + rightHeap.peekMin()) / 2.0;
+	}
+	else if (leftHeap.size() > rightHeap.size())
+	    return (double)leftHeap.peekMax();
+	else
+	    return (double)rightHeap.peekMin();
     }//O(1)
 
 
@@ -41,8 +50,20 @@ public class RunMed {
      *                getMedian() can run in constant time
      *****************************************************/
     public void insert( int addVal )
-    {   
-     }//O(?)
+    {
+	if (isEmpty()){
+	    leftHeap.add(addVal);
+	    return;
+	}
+	if (addVal < leftHeap.peekMax())
+	    leftHeap.add(addVal);
+	else
+	    rightHeap.add(addVal);
+	if (leftHeap.size() - rightHeap.size() > 1)
+	    rightHeap.add(leftHeap.removeMax());
+	else if (leftHeap.size() - rightHeap.size() < -1)
+	    leftHeap.add(rightHeap.removeMin());
+    }//O(?)
 
 
 
@@ -52,17 +73,15 @@ public class RunMed {
      *****************************************************/
     public boolean isEmpty() 
     {
-
+	return (leftHeap.size() == 0 && rightHeap.size() == 0);
     }//O(?)
 
 
 
     //main method for testing
     public static void main( String[] args ) {
-
-	/*~~~V~~~~~~~~~~~~move~me~down~~~~~~~~~~~~~V~~~
+	
         RunMed med = new RunMed();
-
         med.insert(1);
 	System.out.println( med.getMedian() ); //1
         med.insert(3);
@@ -73,7 +92,6 @@ public class RunMed {
 	System.out.println( med.getMedian() ); //4
         med.insert(9);
 	System.out.println( med.getMedian() ); //5
-	~~~~~|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|~~~*/
 
     }//end main()
 
@@ -88,4 +106,4 @@ public class RunMed {
     // {
     // 	/*** YOUR IMPLEMENTATION HERE ***/
     // }//O(?)
-
+    

@@ -5,7 +5,7 @@
 
 import java.util.ArrayList;
 
-public class ALHeap {
+public class ALMaxHeap {
 
     //instance vars
     private ArrayList<Integer> _heap; //underlying container is array of Integers
@@ -13,9 +13,9 @@ public class ALHeap {
     /*****************************************************
      * default constructor  ---  inits empty heap
      *****************************************************/
-    public ALHeap() 
+    public ALMaxHeap() 
     { 
-
+	_heap = new ArrayList<Integer>();
     }
 
 
@@ -28,8 +28,11 @@ public class ALHeap {
      *****************************************************/
     public String toString() 
     { 
-
-    }//O(?)
+	String ans = "";
+	for (int a: _heap)
+	    ans += a + " ";
+	return ans;
+    }//O(n)-one loop
 
 
 
@@ -38,10 +41,9 @@ public class ALHeap {
      * Returns true if no meaningful elements in heap, false otherwise
      *****************************************************/
     public boolean isEmpty() 
-    { 
-
-	return _heap.isEmpty(); 
-    } //O(?)
+    {
+	return (_heap.size() == 0);
+    } //O(1)
 
 
 
@@ -50,9 +52,12 @@ public class ALHeap {
      * Returns min value in heap
      * Postcondition: Heap remains unchanged.
      *****************************************************/
-    public Integer peekMin() 
-    { 
-    } //O(?)
+    public Integer peekMax() 
+    {
+	if (isEmpty())
+	    return null;
+	return _heap.get(0);
+    } //O(1)
 
 
 
@@ -63,8 +68,21 @@ public class ALHeap {
      *****************************************************/
     public void add( Integer addVal ) 
     { 
-
-    } //O(?)
+	if (isEmpty()){
+	    _heap.add(addVal);
+	    return;
+	}
+	int lastPos = _heap.size();
+	int parent = (lastPos - 1)/2;
+	_heap.add(addVal);
+	while (lastPos != 0){
+	    if (addVal < _heap.get(parent))
+		break;
+	    swap(lastPos,parent);
+	    lastPos = parent;
+	    parent = (parent - 1) / 2;
+	}
+    } //O(log(n)): The worst case scenario is when the newVal is the smallest value and has to travel all the way to the root. Therefore, the farthest distance it has to travel is height of the tree, which is log(total elements in the tree).
 
 
 
@@ -73,9 +91,20 @@ public class ALHeap {
      * Removes and returns least element in heap.
      * Postcondition: Tree maintains heap property.
      *****************************************************/
-    public Integer removeMin() 
+    public Integer removeMax() 
     {
-
+	if (isEmpty())
+	    return null;
+        swap(0,_heap.size()-1);
+	int save = _heap.remove(_heap.size()-1);
+	int pos = 0;
+	int maxPos = maxChildPos(pos);
+	while (maxPos != -1 && _heap.get(maxPos) > _heap.get(pos)){
+	    swap (pos, maxPos);
+	    pos = maxPos;
+	    maxPos = maxChildPos(pos);
+	}
+	return save;
     }//O(?)
 
 
@@ -86,17 +115,26 @@ public class ALHeap {
      * -1 if no children, or if input pos is not in ArrayList
      * Postcondition: Tree unchanged
      *****************************************************/
-    private int minChildPos( int pos ) 
+    private int maxChildPos( int pos ) 
     {
-
-    }//O(?)
+	int leftPos = 2 * pos + 1;
+	int rightPos = 2 * pos + 2;
+	if (_heap.size()-1< leftPos)
+	    return -1;
+	if (_heap.size()-1< rightPos)
+	    return leftPos;
+	int max = maxOf(_heap.get(leftPos),_heap.get(rightPos));
+	if (_heap.get(rightPos) == max)
+	    return rightPos;
+	return leftPos;
+    }//O(1)
 
 
 
     //************ aux helper fxns ***************
-    private Integer minOf( Integer a, Integer b ) 
+    private Integer maxOf( Integer a, Integer b ) 
     {
-	if ( a.compareTo(b) < 0 )
+	if ( a.compareTo(b) > 0 )
 	    return a;
 	else
 	    return b;
@@ -109,15 +147,14 @@ public class ALHeap {
     }
     //********************************************
 
-
+    public int size(){
+	return _heap.size();
+    }
 
     //main method for testing
     public static void main( String[] args ) {
 
-	/*--V--------------MOVE ME DOWN------------------V---
-
-	  ALHeap pile = new ALHeap();
-
+	  ALMaxHeap pile = new ALMaxHeap();
 	  pile.add(2);
 	  System.out.println(pile);
 	  pile.add(4);
@@ -138,31 +175,28 @@ public class ALHeap {
 	  System.out.println(pile);
 	  pile.add(9);
 	  System.out.println(pile);
-
-	  System.out.println("removing " + pile.removeMin() + "...");
+	  System.out.println("removing " + pile.removeMax() + "...");
 	  System.out.println(pile);
-	  System.out.println("removing " + pile.removeMin() + "...");
+	  System.out.println("removing " + pile.removeMax() + "...");
 	  System.out.println(pile);
-	  System.out.println("removing " + pile.removeMin() + "...");
+	  System.out.println("removing " + pile.removeMax() + "...");
 	  System.out.println(pile);
-	  System.out.println("removing " + pile.removeMin() + "...");
+	  System.out.println("removing " + pile.removeMax() + "...");
 	  System.out.println(pile);
-	  System.out.println("removing " + pile.removeMin() + "...");
+	  System.out.println("removing " + pile.removeMax() + "...");
 	  System.out.println(pile);
-	  System.out.println("removing " + pile.removeMin() + "...");
+	  System.out.println("removing " + pile.removeMax() + "...");
 	  System.out.println(pile);
-	  System.out.println("removing " + pile.removeMin() + "...");
+	  System.out.println("removing " + pile.removeMax() + "...");
 	  System.out.println(pile);
-	  System.out.println("removing " + pile.removeMin() + "...");
+	  System.out.println("removing " + pile.removeMax() + "...");
 	  System.out.println(pile);
-	  System.out.println("removing " + pile.removeMin() + "...");
+	  System.out.println("removing " + pile.removeMax() + "...");
 	  System.out.println(pile);
-	  System.out.println("removing " + pile.removeMin() + "...");
+	  System.out.println("removing " + pile.removeMax() + "...");
 	  System.out.println(pile);
-	  System.out.println("removing " + pile.removeMin() + "...");
+	  System.out.println("removing " + pile.removeMax() + "...");
 	  System.out.println(pile);
-
-	  ==|============================================|===*/
 
     }//end main()
 
